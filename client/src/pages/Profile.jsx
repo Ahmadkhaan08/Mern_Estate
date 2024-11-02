@@ -9,11 +9,11 @@ export default function Profile() {
   const [uploading, setUploading] = useState(false);
   const [imageUrl, setImageUrl] = useState('');
   const [filePerc, setFilePerc] = useState(0);
-  const [fileUploadError, setFileUploadError] = useState(false);
+  const [fileUploadError, setFileUploadError] = useState(false)
 
   // Cloudinary credentials (use environment variables in production)
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME||"dendbtdev"; // Use your Cloudinary cloud name
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET||"Khan's_Estate"; // Use your upload preset
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME // Use your Cloudinary cloud name
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET // Use your upload preset
 
   const handleFileChange = (e) => {
     setFile(e.target.files[0]);
