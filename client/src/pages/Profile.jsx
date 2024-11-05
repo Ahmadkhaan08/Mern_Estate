@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice';
+import { deleteUserFailure, deleteUserStart, deleteUserSuccess, SignOutUserFailure, SignOutUserStart, SignOutUserSuccess, updateUserFailure, updateUserStart, updateUserSuccess } from '../redux/user/userSlice';
 
 export default function Profile() {
   const { currentUser ,loading,error} = useSelector((state) => state.user); // Getting the current user from the Redux store
@@ -87,6 +87,41 @@ const updatedFormData = { ...formData, avatar: imageUrl || currentUser.avatar }
       dispatch(updateUserFailure(error.message))
     }
   }
+//Handle Delete User 
+const handleDeleteUser=async()=>{
+try {
+  dispatch(deleteUserStart())
+  const res=await fetch(`/api/user/delete/${currentUser._id}`,
+    {
+    method:'DELETE'
+  }
+  )
+  const data=await res.json()
+  if(data.success===false){
+    dispatch(deleteUserFailure(data.message))
+    return;
+  }
+  dispatch(deleteUserSuccess(data))
+} catch (error) {
+  dispatch(deleteUserFailure(error.message))
+}
+}
+
+//Handle SignOut User
+const handleSignOut=async()=>{
+try {
+  dispatch(SignOutUserStart())
+  const res=await fetch('/api/auth/signout')
+  const data=res.json()
+  if(data.success===false){
+    dispatch(SignOutUserFailure(data.message))
+    return
+  }
+  dispatch(SignOutUserSuccess(data))
+} catch (error) {
+  dispatch(SignOutUserFailure(error.message))
+}
+}
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -126,8 +161,8 @@ const updatedFormData = { ...formData, avatar: imageUrl || currentUser.avatar }
         </button>
       </form>
       <div className='flex justify-between mt-3'>
-        <span className='text-red-700 cursor-pointer'>Delete Account</span>
-        <span className='text-red-700 cursor-pointer'>Sign Out</span>
+        <span onClick={handleDeleteUser} className='text-red-700 cursor-pointer'>Delete Account</span>
+        <span onClick={handleSignOut} className='text-red-700 cursor-pointer'>Sign Out</span>
       </div>
       <div className='flex flex-col items-center'>
       <span className='text-red-700 '>{error?error:''}</span>

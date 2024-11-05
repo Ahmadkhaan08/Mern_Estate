@@ -68,3 +68,13 @@ export const Google=async(req,res,next)=>{
         next(error)
     }
 }
+
+//Sign Out Route
+export const SignOut=async(req,res,next)=>{
+try {
+    res.clearCookie('Access_Token')
+    res.status(200).json('User has been logout')
+} catch (error) {
+    next(error)
+}
+}
