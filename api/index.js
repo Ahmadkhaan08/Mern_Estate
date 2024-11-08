@@ -3,6 +3,7 @@ import mongoose from "mongoose"
 import  dotenv from "dotenv"
 import userRouter from '../api/Routes/user.route.js'
 import authRouter from "../api/Routes/auth.route.js"
+import listingRouter from '../api/Routes/listing.route.js'
 import cookieParser from "cookie-parser"
 dotenv.config()
 
@@ -18,6 +19,7 @@ app.listen(3000,()=>{console.log("Server is running on port 3000!!!")})
 
 app.use('/api/user',userRouter)
 app.use('/api/auth',authRouter)
+app.use('/api/listing',listingRouter)
 
 
 //Middleware
