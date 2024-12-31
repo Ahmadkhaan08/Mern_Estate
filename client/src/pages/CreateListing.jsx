@@ -20,6 +20,8 @@ export default function CreateListing() {
     parking: false,
     furnished: false,
   });
+  console.log(formData);
+  
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
@@ -63,7 +65,7 @@ export default function CreateListing() {
       formData.append('file', file);
       formData.append('upload_preset', uploadPreset);
 
-      fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+     fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
         method: 'POST',
         body: formData,
       })
@@ -124,6 +126,7 @@ export default function CreateListing() {
         return setError('Discount price must be lower than regular price');
       setLoading(true);
       setError(false);
+      
       const res = await fetch('/api/listing/create', {
         method: 'POST',
         headers: {
@@ -302,7 +305,7 @@ export default function CreateListing() {
           </div>
         </div>
 
-        <div className='flex flex-col gap-4 flex-1'>
+        <div className='flex flex-col gap-4 '>
           <div>
             <p className='font-semibold text-lg mb-3'>
               Upload your images here (max 6)
@@ -316,14 +319,14 @@ export default function CreateListing() {
                 className='p-2'
                 onChange={(e) => setFiles(e.target.files)}
               />
-              <button
-                type='button'
-                className='mt-3 px-4 py-2 bg-blue-600 text-white rounded-lg'
-                onClick={handleImageSubmit}
-                disabled={uploading}
-              >
-                {uploading ? 'Uploading...' : 'Upload Images'}
-              </button>
+               <button
+              type='button'
+              disabled={uploading}
+              onClick={handleImageSubmit}
+              className='p-3 text-green-700 border border-green-700 rounded uppercase hover:shadow-lg disabled:opacity-80'
+            >
+              {uploading ? 'Uploading...' : 'Upload'}
+            </button>
               {imageUploadError && (
                 <p className='text-red-600 mt-2'>{imageUploadError}</p>
               )}
@@ -352,8 +355,6 @@ export default function CreateListing() {
               </div>
             </div>
           )}
-        </div>
-      </form>
       {error && <p className='text-red-600 mt-3'>{error}</p>}
       {loading && <p className='mt-3'>Creating Listing...</p>}
       <button
@@ -362,6 +363,8 @@ export default function CreateListing() {
       >
         Submit Listing
       </button>
+        </div>
+      </form>
     </main>
   );
 }
