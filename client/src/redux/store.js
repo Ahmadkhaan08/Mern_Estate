@@ -1,31 +1,29 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import userReducer from './user/userSlice';
+import  userReducer  from './user/userSlice'
 import storage from 'redux-persist/lib/storage'
-import {persistReducer, persistStore} from 'redux-persist'
+import {persistReducer,persistStore} from "redux-persist"
 
-//combine Reducers
-const rootReducer=combineReducers({
-  user:userReducer,
-})
 
-//configuration for persisting the store
+const rootReducer= combineReducers({user:userReducer})
+
 const persistConfig={
   key:'root',
   storage,
-  version:1,
+  version:1
 }
 
-// Apply persistReducer to  rootReducer
 const persistedReducer=persistReducer(persistConfig,rootReducer)
 
-// Configure the Redux store
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware:(getDefaultMiddleware)=>
-getDefaultMiddleware({
-    serializableCheck:false,
-}),
-  
+  middleware:(getDefaultMiddleware)=>getDefaultMiddleware({
+    serializableCheck:false
+  })
 })
 
 export const persistor=persistStore(store)
+
+// // Infer the `RootState` and `AppDispatch` types from the store itself
+// export type RootState = ReturnType<typeof store.getState>
+// // Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+// export type AppDispatch = typeof store.dispatch
