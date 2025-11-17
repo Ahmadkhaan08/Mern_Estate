@@ -6,10 +6,11 @@ import { updateUserFailure, updateUserStart, updateUserSuccess ,updateUser} from
 
 
 export default function Profile(){
-    const {currentUser}=useSelector((state)=>state.user)
+    const {currentUser,loading,error}=useSelector((state)=>state.user)
     const [avatar,setAvatar]=useState(currentUser.avatar)
     const [formData,setFormData]=useState({})
     const dispatch = useDispatch();
+     const [updateSuccess, setUpdateSuccess] = useState(false);
     const fileRef=useRef(null)
     // console.log(formData)
 
@@ -64,6 +65,7 @@ export default function Profile(){
                 return
             }
             dispatch(updateUserSuccess(data))
+            setUpdateSuccess(true)
         } catch (error) {
                 dispatch(updateUserFailure(error.message))
             
@@ -78,13 +80,17 @@ export default function Profile(){
             <input type="text" id="username" placeholder="Username" className="border p-3 rounded-lg" defaultValue={currentUser.username} onChange={handleChange} />
             <input type="text" id="email" placeholder="Email" className="border p-3 rounded-lg"  defaultValue={currentUser.email} onChange={handleChange}/>
             <input type="text" id="password" placeholder="Password" className="border p-3 rounded-lg" onChange={handleChange} />
-            <button className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>Update User</button>
+            <button disabled={loading} className='bg-slate-700 text-white rounded-lg p-3 uppercase hover:opacity-95 disabled:opacity-80'>{loading ? 'Loading...' : 'Update User'}</button>
         </form>
         <div className="flex justify-between mt-5">
             <span className="text-red-700 mt-5">Delete Account</span>
             <span className="text-red-700
              mt-5">Sign Out</span>
         </div>
+        <p className='text-red-700 mt-5'>{error ? error : ''}</p>
+      <p className='text-green-700 mt-5'>
+        {updateSuccess ? 'User is updated successfully!' : ''}
+      </p>
         </div>
     )
 }
