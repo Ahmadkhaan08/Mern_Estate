@@ -138,7 +138,7 @@ function CreateListing() {
         return
       }
       setLoading(false)
-      navigate(`/create-listing/${data._id}`)
+      navigate(`/listing/${data._id}`)
       
     } catch (error) {
       setError(error.message)
@@ -240,7 +240,7 @@ function CreateListing() {
                 type="number"
                 id="regularPrice"
                 min="50"
-                max="1000000"
+                max="100000000000"
                 required
                 className="p-3 border border-gray-300 rounded-lg"
                 onChange={handleChange}
@@ -260,7 +260,7 @@ function CreateListing() {
                 type="number"
                 id="discountPrice"
                 min="0"
-                max="1000000"
+                max="10000000000"
                 required
                 className="p-3 border border-gray-300 rounded-lg"
                 onChange={handleChange}
