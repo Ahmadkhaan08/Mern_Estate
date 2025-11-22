@@ -17,8 +17,8 @@ function CreateListing() {
     description: '',
     address: '',
     type: 'rent',
-    bedrooms: 1,
-    bathrooms: 1,
+    bedrooms: 0,
+    bathrooms: 0,
     regularPrice: 50,
     discountPrice: 0,
     offer: false,
@@ -213,7 +213,7 @@ function CreateListing() {
               <input
                 type="number"
                 id="bedrooms"
-                min="1"
+                min="0"
                 max="10"
                 required
                 className="p-3 border border-gray-300 rounded-lg"
@@ -239,7 +239,7 @@ function CreateListing() {
               <input
                 type="number"
                 id="regularPrice"
-                min="50"
+                min="0"
                 max="100000000000"
                 required
                 className="p-3 border border-gray-300 rounded-lg"
@@ -249,7 +249,7 @@ function CreateListing() {
               <div className="flex flex-col items-center">
                 <p>Regular Price</p>
                 {formData.type==="rent" && (
-                <span className="text-xs">($ / month)</span>
+                <span className="text-xs">(PKR / month)</span>
                 )}
               </div>
             </div>
@@ -269,7 +269,7 @@ function CreateListing() {
               <div className="flex flex-col items-center">
                 <p>Discount Price</p>
                 {formData.type==="rent" &&(
-                <span className="text-xs">($ / month)</span>
+                <span className="text-xs">(PKR / month)</span>
                 )}
               </div>
             </div>
