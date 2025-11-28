@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice'
 import OAuth from '../components/OAuth'
+const BASE_URI=import.meta.env.VITE_BACKEND_URI
+
 
 export default function SignIn() {
   const [formData,setFormData]=useState({})
@@ -22,7 +24,7 @@ export default function SignIn() {
     e.preventDefault()
     try {
       dispatch(signInStart())
-      const res=await fetch("/api/auth/signin",{
+      const res=await fetch(`${BASE_URI}/api/auth/signin`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"

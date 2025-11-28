@@ -17,6 +17,8 @@ import {
   signOutUserSuccess,
 } from "../redux/user/userSlice";
 import { Link } from "react-router-dom";
+const BASE_URI=import.meta.env.VITE_BACKEND_URI
+
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -62,7 +64,7 @@ export default function Profile() {
       dispatch(updateUser({ avatar: fileUrl }));
       // Persist avatar change to server immediately so it reflects across sessions
       try {
-        const res = await fetch(`/api/user/update/${currentUser._id}`, {
+        const res = await fetch(`${BASE_URI}/api/user/update/${currentUser._id}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           credentials: 'include',
@@ -92,7 +94,7 @@ export default function Profile() {
     try {
       dispatch(updateUserStart());
       const payload = { ...formData, avatar };
-      const res = await fetch(`/api/user/update/${currentUser._id}`, {
+      const res = await fetch(`${BASE_URI}/api/user/update/${currentUser._id}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -115,7 +117,7 @@ export default function Profile() {
   const handleDelete = async () => {
     try {
       dispatch(deleteUserStart());
-      const res = await fetch(`/api/user/delete/${currentUser._id}`, {
+      const res = await fetch(`${BASE_URI}/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
         credentials: 'include',
       });
@@ -132,7 +134,7 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch("/api/auth/signout", { credentials: 'include' });
+      const res = await fetch(`${BASE_URI}/api/auth/signout`, { credentials: 'include' });
       const data = await res.json();
       if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
@@ -146,7 +148,7 @@ export default function Profile() {
  const handleShowListing=async()=>{
   try {
       setShowListingError(false)
-    const res=await fetch(`/api/user/listings/${currentUser._id}`, { credentials: 'include' })
+    const res=await fetch(`${BASE_URI}/api/user/listings/${currentUser._id}`, { credentials: 'include' })
     const data=await res.json()
     if(data.success===false){
       setShowListingError(true)
@@ -160,7 +162,7 @@ setUserListings(data)
 
  const handleDeleteListing=async(listingId)=>{
   try {
-    const res=await fetch(`/api/listing/delete/${listingId}`,{
+    const res=await fetch(`${BASE_URI}/api/listing/delete/${listingId}`,{
       method:"DELETE"
       ,credentials:'include'
     })

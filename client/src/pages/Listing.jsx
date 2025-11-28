@@ -7,6 +7,8 @@ import "swiper/css/bundle"
 import {FaBath, FaBed, FaChair, FaMapMarkerAlt, FaParking, FaShare} from "react-icons/fa"
 import { useSelector } from 'react-redux'
 import Contact from '../components/Contact'
+const BASE_URI=import.meta.env.VITE_BACKEND_URI
+
 
 
 function Listing() {
@@ -23,7 +25,7 @@ function Listing() {
             const fetchListing=async()=>{
                 try{
             setLoading(true)
-            const res=await fetch(`/api/listing/get/${params.listingID}`)
+            const res=await fetch(`${BASE_URI}/api/listing/get/${params.listingID}`)
                 const data=await res.json()
                 if(data.success===false){
                     setError(true)

@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ListingItem from "../components/ListingItem";
+const BASE_URI=import.meta.env.VITE_BACKEND_URI
+
 
 function Search() {
     const navigate=useNavigate()
@@ -16,6 +18,7 @@ function Search() {
     const [loading,setLoading]=useState(false)
     const [listings,setListings]=useState([])
     const [showMore,setShowMore]=useState(false)
+
 //   console.log(sideBarData)
 console.log(listings)
 
@@ -45,7 +48,7 @@ useEffect(()=>{
         setLoading(true)
         setShowMore(false)
         const searchQuery=urlParams.toString()
-        const res=await fetch(`/api/listing/get?${searchQuery}`)
+        const res=await fetch(`${BASE_URI}/api/listing/get?${searchQuery}`)
         const data=await res.json()
         if(data.length>8){
           setShowMore(true)
@@ -89,7 +92,7 @@ fectchListings()
     urlParams.set("sort",sideBarData.sort)
     urlParams.set("order",sideBarData.order)
     const searchQuery=urlParams.toString()
-    navigate(`/search?${searchQuery}`)
+    navigate(`${BASE_URI}/search?${searchQuery}`)
   }
   const handleShowMore=async()=>{
     const numberOfListings=listings.length
@@ -97,7 +100,7 @@ fectchListings()
     const urlParams=new URLSearchParams(location.search)
     urlParams.set('startIndex',startIndex)
     const searchQuery=urlParams.toString()
-    const res=await fetch(`/api/listing/get?${searchQuery}`)
+    const res=await fetch(`${BASE_URI}/api/listing/get?${searchQuery}`)
     const data=await res.json()
     if(data.length<9){
       setShowMore(false)

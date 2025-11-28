@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+const BASE_URI=import.meta.env.VITE_BACKEND_URI
+
 
 function Contact({ listing }) {
   const [landlord, setLandlord] = useState(null);
@@ -12,7 +13,7 @@ function Contact({ listing }) {
   useEffect(() => {
     const fetchLandlord = async () => {
       try {
-        const res = await fetch(`/api/user/${listing.userRef}`);
+        const res = await fetch(`${BASE_URI}/api/user/${listing.userRef}`);
         const data = await res.json();
         setLandlord(data);
       } catch (error) {

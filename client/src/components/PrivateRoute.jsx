@@ -1,6 +1,4 @@
-import React from 'react'
 import { useSelector } from 'react-redux'
-import SignIn from '../pages/SignIn'
 import { Navigate, Outlet } from 'react-router-dom'
 
 function PrivateRoute() {

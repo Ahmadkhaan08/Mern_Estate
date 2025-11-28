@@ -3,6 +3,8 @@ import { bucketID, ID, storage } from "../appwrite";
 import { Permission } from "appwrite";
 import { useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
+const BASE_URI=import.meta.env.VITE_BACKEND_URI
+
 
 function CreateListing() {
   const {currentUser}=useSelector(state=>state.user)
@@ -32,7 +34,7 @@ function CreateListing() {
   useEffect(()=>{
     const fetchListing=async()=>{
         const listingId=params.listingID
-        const res=await fetch(`/api/listing/get/${listingId}`)
+        const res=await fetch(`${BASE_URI}/api/listing/get/${listingId}`)
         const data=await res.json()
         if(data.success===false){
             return
@@ -84,11 +86,10 @@ function CreateListing() {
           }
         );
         console.log("Uploaded:", uploaded);
-        const fileUrl = `${
-          import.meta.env.VITE_APPWRITE_ENDPOINT
-        }/storage/buckets/${bucketID}/files/${uploaded.$id}/view?project=${
-          import.meta.env.VITE_APPWRITE_PROJECT_ID
-        }`;
+        const baseUrl = import.meta.env.VITE_APPWRITE_ENDPOINT;
+        const projectId = import.meta.env.VITE_APPWRITE_PROJECT_ID
+
+        const fileUrl = `${baseUrl}/storage/buckets/${bucketID}/files/${uploaded.$id}/view?project=${projectId}`;
         resolve(fileUrl);
       } catch (error) {
         reject(error);
@@ -134,7 +135,7 @@ function CreateListing() {
     try {
       setLoading(true)
       setError(false)
-      const res=await fetch(`/api/listing/update/${params.listingID}`,{
+      const res=await fetch(`${BASE_URI}/api/listing/update/${params.listingID}`,{
         method:"POST",
         headers:{
           "Content-Type":"application/json"
