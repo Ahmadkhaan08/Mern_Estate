@@ -58,7 +58,9 @@ export default function Header() {
           </Link>
           <Link to="/profile">
             {currentUser ? (
-              <img  className="rounded-full w-7 h-7 object-cover" src={currentUser.avatar} alt="profile"></img>
+              <img  className="rounded-full w-7 h-7 object-cover" src={currentUser.avatar} alt="profile"
+          onError={(e)=>{e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.username || 'User')}`}}
+               ></img>
             ) : (
               <li className=" text-slate-700 hover:underline">Sign In</li>
             )}

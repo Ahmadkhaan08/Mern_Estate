@@ -20,9 +20,11 @@ export default function OAuth(){
             headers:{
                 "Content-Type":"application/json"
             },
+            credentials: 'include',
             body:JSON.stringify({name:result.user.displayName,email:result.user.email,photo:result.user.photoURL})
         })
         const data=await res.json()
+        console.log('OAuth response:', data)
         dispatch(signInSuccess(data))
         navigate("/")
     } catch (error) {

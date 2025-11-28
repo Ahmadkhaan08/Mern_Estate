@@ -9,26 +9,55 @@ import cors from "cors";
 import serverless from "serverless-http";
 
 dotenv.config();
-
 const app = express();
 
-// Middlewares
 app.use(express.json());
-app.use(cookieParser());
-// allow CORS; adjust origin to your frontend domain in production
-app.use(
-  cors({
-    origin: process.env.CLIENT_ORIGIN || true,
-    credentials: true,
-  })
-);
+app.use(cookieParser())
 
-// Routes
+
+const corsOption = {
+  origin: process.env.FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+  allowedHeaders: ["Content-Type", "Authorization"],
+};  
+
+app.use(cors(corsOption));
+
+// DB CONNECTION — Safe for Vercel
+let isConnected = false;
+
+async function connectDB() {
+  if (isConnected) return;
+
+  try {
+    const db = await mongoose.connect(process.env.MONGO_DB);
+    isConnected = db.connections[0].readyState === 1;
+    console.log("MongoDB Connected!");
+  } catch (err) {
+    console.error("MongoDB error:", err);
+    throw err;
+  }  
+}  
+
+// mongoose
+//   .connect(process.env.MONGO_DB)
+//   .then(() => {
+//     console.log("Connected to MongoDB Successfully!");  
+//   })
+//   .catch((err) => {
+//     console.log(err);  
+//   });
+
+// app.listen(3000, () => {
+//   console.log("Server is running on port 3000!!!");
+// });
+
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/listing", listingRouter);
 
-// Error middleware
+//Middleware
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
@@ -39,38 +68,14 @@ app.use((err, req, res, next) => {
   });
 });
 
-// Mongoose connection (cache across serverless invocations)
-const connectToDatabase = async () => {
-  if (mongoose.connection.readyState >= 1) {
-    return;
-  }
-  try {
-    await mongoose.connect(process.env.MONGO_DB, {
-      // useNewUrlParser/useUnifiedTopology are default in modern mongoose
-    });
-    console.log("Connected to MongoDB Successfully!");
-  } catch (err) {
-    console.error("MongoDB connection error:", err);
-    throw err;
-  }
+// Export serverless handler
+const handler = serverless(app);
+
+export const GET = async (req, context) => {
+  await connectDB();
+  return handler(req, context);
 };
 
-const sls = serverless(app);
-// Export a serverless handler for Vercel / other platforms
-export const handler = async (event, context) => {
-  // ensure DB connection before handling requests
-  await connectToDatabase();
-  return sls(event, context);
-};
-
-// For local development, start express server when run directly
-if (process.env.NODE_ENV !== "production") {
-  connectToDatabase()
-    .then(() => {
-      const port = process.env.PORT || 3000;
-      app.listen(port, () => {
-        console.log(`Server is running on port ${port}!!!`);
-      });
-    })
-    .catch((err) => console.error(err));
-}
+export const POST = GET;
+export const PUT = GET;
+export const DELETE = GET;

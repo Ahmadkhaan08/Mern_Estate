@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { ID, storage, bucketID } from "../appwrite";
 import { Permission } from "appwrite";
@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { currentUser, loading, error } = useSelector((state) => state.user);
-  const [avatar, setAvatar] = useState(currentUser.avatar);
+  const [avatar, setAvatar] = useState(currentUser?.avatar || "");
   const [formData, setFormData] = useState({});
   const dispatch = useDispatch();
   const [updateSuccess, setUpdateSuccess] = useState(false);
@@ -28,6 +28,13 @@ export default function Profile() {
   const [showListingError,setShowListingError]=useState(false)
   const [userListings,setUserListings]=useState([])
   // console.log(formData)
+// Keep local avatar state in sync when currentUser changes (fixes missing avatar after sign-in)
+  useEffect(() => {
+    console.log("Profile effect - currentUser:", currentUser, "local avatar:", avatar);
+    if (currentUser?.avatar) {
+      setAvatar(currentUser.avatar);
+    }
+  }, [currentUser?.avatar]);
 
   const uploadImage = async (e) => {
     const file = e.target.files[0];
@@ -53,6 +60,21 @@ export default function Profile() {
       console.log(fileUrl);
       setAvatar(fileUrl);
       dispatch(updateUser({ avatar: fileUrl }));
+      // Persist avatar change to server immediately so it reflects across sessions
+      try {
+        const res = await fetch(`/api/user/update/${currentUser._id}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ avatar: fileUrl }),
+        });
+        const updated = await res.json();
+        if (updated && updated.success !== false) {
+          dispatch(updateUserSuccess(updated));
+        }
+      } catch (err) {
+        console.error('Failed to persist avatar on server:', err);
+      }
     } catch (error) {
       console.error("Upload error:", error);
     }
@@ -75,6 +97,7 @@ export default function Profile() {
         headers: {
           "Content-Type": "application/json",
         },
+        credentials: 'include',
         body: JSON.stringify(payload),
       });
       const data = await res.json();
@@ -94,6 +117,7 @@ export default function Profile() {
       dispatch(deleteUserStart());
       const res = await fetch(`/api/user/delete/${currentUser._id}`, {
         method: "DELETE",
+        credentials: 'include',
       });
       const data = await res.json();
       if (data.success === false) {
@@ -108,7 +132,7 @@ export default function Profile() {
   const handleSignOut = async () => {
     try {
       dispatch(signOutUserStart());
-      const res = await fetch("/api/auth/signout");
+      const res = await fetch("/api/auth/signout", { credentials: 'include' });
       const data = await res.json();
       if (data.success === false) {
         dispatch(signOutUserFailure(data.message));
@@ -122,7 +146,7 @@ export default function Profile() {
  const handleShowListing=async()=>{
   try {
       setShowListingError(false)
-    const res=await fetch(`/api/user/listings/${currentUser._id}`)
+    const res=await fetch(`/api/user/listings/${currentUser._id}`, { credentials: 'include' })
     const data=await res.json()
     if(data.success===false){
       setShowListingError(true)
@@ -138,6 +162,7 @@ setUserListings(data)
   try {
     const res=await fetch(`/api/listing/delete/${listingId}`,{
       method:"DELETE"
+      ,credentials:'include'
     })
     const data=await res.json()
     if(data.success===false){
@@ -163,8 +188,9 @@ setUserListings(data)
         />
         <img
           onClick={() => fileRef.current.click()}
-          src={currentUser.avatar || avatar || formData.avatar}
+          src={avatar || currentUser?.avatar || formData.avatar || ""}
           alt="profile"
+          onError={(e)=>{e.currentTarget.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(currentUser?.username || 'User')}`}}
           className="rounded-full h-24 w-24 object-cover cursor-pointer self-center mt-2"
         />
         <input
@@ -260,3 +286,5 @@ setUserListings(data)
     </div>
   );
 }
+
+  
