@@ -6,10 +6,18 @@ import userRouter from "./routes/user.route.js";
 import listingRouter from "./routes/listing.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
-import serverless from "serverless-http";
+// serverless-http removed — use express app directly for Vercel handler
 
 dotenv.config();
 const app = express();
+
+// Process-level handlers to surface crashes clearly
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled Rejection:", err);
+});
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+});
 
 app.use(express.json());
 app.use(cookieParser())
@@ -68,9 +76,6 @@ async function connectDB() {
 // });
 
 
-// Export serverless handler
-const handler = serverless(app);
-
 // Production/Vercel export (req, res) signature. Use (req,res) as server handler.
 export default async function (req, res) {
   if (!process.env.MONGO_DB) {
@@ -81,11 +86,23 @@ export default async function (req, res) {
   }
   try {
     await connectDB();
-    return handler(req, res);
+    return app(req, res);
   } catch (err) {
     console.error("Handler error:", err);
     res.statusCode = 500;
     res.end(JSON.stringify({ success: false, message: "Server error" }));
   }
+}
+// Local dev server fallback (run locally with `node api/index.js`)
+if (process.env.NODE_ENV !== "production") {
+  (async () => {
+    try {
+      await connectDB();
+      const port = process.env.PORT || 3000;
+      app.listen(port, () => console.log(`Server listening on ${port}`));
+    } catch (err) {
+      console.error("Local server failed to start:", err);
+    }
+  })();
 }
 
