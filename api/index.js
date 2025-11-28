@@ -16,7 +16,7 @@ app.use(cookieParser())
 
 
 const corsOptions = {
-  origin: process.env.FRONTEND_URL,
+  origin: process.env.FRONTEND_URL || true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -71,8 +71,21 @@ async function connectDB() {
 // Export serverless handler
 const handler = serverless(app);
 
-export default  async function(req, context) {
-  await connectDB();
-  return handler(req, context);
-};
+// Production/Vercel export (req, res) signature. Use (req,res) as server handler.
+export default async function (req, res) {
+  if (!process.env.MONGO_DB) {
+    console.error("MONGO_DB environment variable is not set. Aborting.");
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, message: "MONGO_DB not configured" }));
+    return;
+  }
+  try {
+    await connectDB();
+    return handler(req, res);
+  } catch (err) {
+    console.error("Handler error:", err);
+    res.statusCode = 500;
+    res.end(JSON.stringify({ success: false, message: "Server error" }));
+  }
+}
 
