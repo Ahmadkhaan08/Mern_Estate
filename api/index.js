@@ -15,15 +15,29 @@ app.use(express.json());
 app.use(cookieParser())
 
 
-const corsOption = {
+const corsOptions = {
   origin: process.env.FRONTEND_URL,
   methods: ["GET", "POST", "PUT", "DELETE"],
   credentials: true,
   allowedHeaders: ["Content-Type", "Authorization"],
 };  
 
-app.use(cors(corsOption));
+app.use(cors(corsOptions));
 
+app.use("/api/auth", authRouter);
+app.use("/api/user", userRouter);
+app.use("/api/listing", listingRouter);
+
+//Middleware
+app.use((err, req, res, next) => {
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
+  });
+});
 // DB CONNECTION — Safe for Vercel
 let isConnected = false;
 
@@ -53,29 +67,12 @@ async function connectDB() {
 //   console.log("Server is running on port 3000!!!");
 // });
 
-app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
-app.use("/api/listing", listingRouter);
-
-//Middleware
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  return res.status(statusCode).json({
-    success: false,
-    statusCode,
-    message,
-  });
-});
 
 // Export serverless handler
 const handler = serverless(app);
 
-export const GET = async (req, context) => {
+export default  async function(req, context) {
   await connectDB();
   return handler(req, context);
 };
 
-export const POST = GET;
-export const PUT = GET;
-export const DELETE = GET;
