@@ -92,7 +92,7 @@ fectchListings()
     urlParams.set("sort",sideBarData.sort)
     urlParams.set("order",sideBarData.order)
     const searchQuery=urlParams.toString()
-    navigate(`${BASE_URI}/search?${searchQuery}`)
+    navigate(`/search?${searchQuery}`)
   }
   const handleShowMore=async()=>{
     const numberOfListings=listings.length
