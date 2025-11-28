@@ -37,7 +37,7 @@ const connectDB = async () => {
     if (mongoose.connection.readyState >= 1) {
       return; // Already connected
     }
-    await mongoose.connect(process.env.MONGODB_URI);
+    await mongoose.connect(process.env.MONGO_DB);
     console.log("MongoDB connected");
   } catch (error) {
     console.error("MongoDB connection error:", error);
