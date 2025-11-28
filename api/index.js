@@ -32,9 +32,20 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
+// Debug request logging when DEBUG=true
+app.use((req, res, next) => {
+  if (process.env.DEBUG) {
+    console.log(`API Request: ${req.method} ${req.url}`);
+  }
+  next();
+});
+
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/listing", listingRouter);
+
+// Health check
+app.get("/api/health", (req, res) => res.json({ ok: true, ts: new Date().toISOString() }));
 
 //Middleware
 app.use((err, req, res, next) => {
