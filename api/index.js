@@ -1,9 +1,9 @@
 import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
-import authRouter from "./routes/auth.route.js";
-import userRouter from "./routes/user.route.js";
-import listingRouter from "./routes/listing.route.js";
+import authRouter from "./route/auth.route.js";
+import userRouter from "./route/user.route.js";
+import listingRouter from "./route/listing.route.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
