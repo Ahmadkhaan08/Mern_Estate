@@ -4,38 +4,38 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import listingRouter from "./routes/listing.route.js";
+import connectDB from "./db/mongoDB.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
 dotenv.config();
 const app = express();
 
+const corsOption = {
+  origin: process.env.FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  credentials: true,
+  allowedHeaders: ["Content-type", "Authorization"],
+};
 
+app.use(cors(corsOption))
 app.use(express.json());
 app.use(cookieParser())
 
-
-
-let isConnected=false
-async function ConnectToMongoDB() {
+app.use(async (req, res, next) => {
   try {
-    await mongoose.connect(process.env.MONGO_DB,{
-      useNewUrlParser:true,
-      useUnifiedTopology:false
-    })
-    isConnected=true
-    console.log("Connected to MongoDB");
-  } catch (error) {
-    console.error("Error connecting to MongoDB",error)    
+    await connectDB();
+    next();
+  } catch (err) {
+    next(err);
   }
-}
-
-app.use((req, res, next) => {
-  if (!isConnected){
-    ConnectToMongoDB()
-  } 
-  next();
 });
+
+app.get("/", (req, res) => {
+  res.send("API is running");
+});
+
+
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
@@ -53,5 +53,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-export default app
-
+app.listen(3000, () => {
+  console.log("Server is running on PORT 3000");
+});
