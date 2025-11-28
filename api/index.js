@@ -4,7 +4,6 @@ import dotenv from "dotenv";
 import authRouter from "./routes/auth.route.js";
 import userRouter from "./routes/user.route.js";
 import listingRouter from "./routes/listing.route.js";
-import connectDB from "./db/mongoDB.js";
 import cookieParser from "cookie-parser";
 import cors from "cors";
 
@@ -30,6 +29,22 @@ app.use(async (req, res, next) => {
     next(err);
   }
 });
+
+// db/mongoDB.js
+
+const connectDB = async () => {
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      return; // Already connected
+    }
+    await mongoose.connect(process.env.MONGODB_URI);
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.error("MongoDB connection error:", error);
+    throw error;
+  }
+};
+
 
 app.get("/", (req, res) => {
   res.send("API is running");
