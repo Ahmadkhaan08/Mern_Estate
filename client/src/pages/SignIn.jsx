@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
 import { signInFailure, signInStart, signInSuccess } from '../redux/user/userSlice'
-import OAuth from '../components/OAuth'
+import OAuth from '../components/Oauth'
 const BASE_URI=import.meta.env.VITE_BACKEND_URI
 
 
