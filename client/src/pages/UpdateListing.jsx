@@ -137,6 +137,7 @@ function CreateListing() {
       setError(false)
       const res=await fetch(`${BASE_URI}/api/listing/update/${params.listingID}`,{
         method:"POST",
+        credentials:"include",
         headers:{
           "Content-Type":"application/json"
         },

@@ -121,6 +121,7 @@ function CreateListing() {
       setError(false)
       const res=await fetch(`${BASE_URI}/api/listing/create`,{
         method:"POST",
+        credentials:"include",
         headers:{
           "Content-Type":"application/json"
         },
@@ -137,7 +138,7 @@ function CreateListing() {
         return
       }
       setLoading(false)
-      navigate(`${BASE_URI}/listing/${data._id}`)
+      navigate(`/listing/${data._id}`)
       
     } catch (error) {
       setError(error.message)
