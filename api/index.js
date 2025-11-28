@@ -11,6 +11,10 @@ import cors from "cors";
 dotenv.config();
 const app = express();
 
+// Log presence of critical env vars (not values) to help debugging
+console.log(`MONGO_DB set: ${Boolean(process.env.MONGO_DB)}`);
+console.log(`FRONTEND_URL set: ${Boolean(process.env.FRONTEND_URL)}`);
+
 // Process-level handlers to surface crashes clearly
 process.on("unhandledRejection", (err) => {
   console.error("Unhandled Rejection:", err);
@@ -96,8 +100,17 @@ export default async function (req, res) {
     return;
   }
   try {
+    console.log(`Handler invoked: ${req.method} ${req.url}`);
     await connectDB();
-    return app(req, res);
+    // Wrap app(req, res) to catch thrown errors synchronously
+    try {
+      return app(req, res);
+    } catch (innerErr) {
+      console.error('Error in app handler:', innerErr);
+      res.statusCode = 500;
+      res.end(JSON.stringify({ success: false, message: 'Server error' }));
+      return;
+    }
   } catch (err) {
     console.error("Handler error:", err);
     res.statusCode = 500;
